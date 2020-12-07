@@ -70,5 +70,31 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../JDK/java_package/xmlbeans-4.0.0.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="jar://$MODULE_DIR$/../../JDK/java_package/xmlbeans-4.0.0-javadoc.jar!/" />
+        </JAVADOC>
+        <SOURCES>
+          <root url="jar://$MODULE_DIR$/../../JDK/java_package/xmlbeans-4.0.0-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library>
+        <CLASSES>
+          <root url="file://$MODULE_DIR$/../../JDK/java_package" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="file://$MODULE_DIR$/../../JDK/java_package" />
+        </SOURCES>
+        <jarDirectory url="file://$MODULE_DIR$/../../JDK/java_package" recursive="false" />
+        <jarDirectory url="file://$MODULE_DIR$/../../JDK/java_package" recursive="false" type="SOURCES" />
+      </library>
+    </orderEntry>
   </component>
 </module>

@@ -1,8 +1,8 @@
 import bean.StudentBean;
-import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.*;
 import util.DBHelper;
 
+import java.io.FileOutputStream;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -36,6 +36,27 @@ public class Main {
             sql = "select * from Student";
             ResultSet resultSet = db.search(sql,null);
             ResultSetMetaData resultSetMetaData ;
+//------------------------------------------------------------------------------
+            int countColumnNum = resultSet.getMetaData().getColumnCount();
+            int i =1;
+            // 创建Excel文档
+            HSSFWorkbook workBook = new HSSFWorkbook() ;
+            // sheet 对应一个工作页
+            HSSFSheet sheet = workBook.createSheet("student") ;
+            HSSFRow firstRow = sheet.createRow(0); //下标为0的行开始
+            HSSFCell[] firstCell = new HSSFCell[countColumnNum];
+
+            String[] names = new String[countColumnNum];
+            names[0] ="id";
+            names[1] ="name";
+            names[2] ="sex";
+            names[3] ="birth";
+//------------------------------------------------------------------------------
+            for(int j= 0 ;j<countColumnNum; j++)
+            {
+                firstCell[j] = firstRow.createCell(j);
+                firstCell[j].setCellValue(new HSSFRichTextString(names[j]));
+            }
 
 
             while (resultSet.next()) {
@@ -50,10 +71,21 @@ public class Main {
                 System.out.println("学生性别" + "\t\t" + stuBean.getStuSex());
                 System.out.println("学生生日" + "\t\t" + stuBean.getStuBirth());
                 System.out.println();
-
-                mySQLToExcel.insertDataToExcel(stuBean);//插入数据到excel
-
+//------------------------------------------------------------------------------
+//                mySQLToExcel.insertDataToExcel(stuBean);//插入数据到excel
+                HSSFRow row = sheet.createRow(i);
+                for (int j = 0 ; j < countColumnNum ; j++)
+                {
+                    HSSFCell cell = row.createCell(j);
+                    cell.setCellValue(
+                            new HSSFRichTextString(resultSet.getString(j+1)));
+                }
+                i++;
             }
+            FileOutputStream studentExcel;
+            studentExcel = new FileOutputStream("test.xls");
+            workBook.write(studentExcel);
+//------------------------------------------------------------------------------
             resultSet.close();
 
             db.countColumn();
