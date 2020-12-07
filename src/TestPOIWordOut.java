@@ -25,68 +25,69 @@ public class TestPOIWordOut {
             //设置段落居中
             titleParagraph.setAlignment(ParagraphAlignment.CENTER);
 
-            XWPFRun titleParagraphRun = titleParagraph.createRun();
+            XWPFRun titleParagraphRun = titleParagraph.createRun();//标题
             titleParagraphRun.setText("自学指导（标题）");
-            titleParagraphRun.setColor("000000");
-            titleParagraphRun.setFontSize(20);
+            titleParagraphRun.setColor("000000");//颜色
+            titleParagraphRun.setFontSize(20);//字号
 
             //段落
             XWPFParagraph firstParagraph = document.createParagraph();
             XWPFRun run = firstParagraph.createRun();
-            run.setText("   自学遇到问题怎么办？");
-            run.setColor("698869");
+            run.setText("自学遇到问题怎么办？");
+            run.setColor("698869");//
             run.setFontSize(16);
 
             //设置段落背景颜色
-//            CTShd cTShd = run.getCTR().addNewRPr().addNewShd();
             CTShd ctShd = run.getCTR().addNewRPr().addNewShd();
             ctShd.setVal(STShd.CLEAR);
-            ctShd.setFill("97FF45");
+            ctShd.setFill("97FF45");//设置填充色
 
             //换行
-            XWPFParagraph paragraph1 = document.createParagraph();
-            XWPFRun paragraphRun1 = paragraph1.createRun();
-            paragraphRun1.setText("\r");
+//            lineBreak(document);
+//            XWPFParagraph paragraph1 = document.createParagraph();
+//            XWPFRun paragraphRun1 = paragraph1.createRun();
+//            paragraphRun1.setText("\r");
 
-            //基本信息表格
-            XWPFTable infoTable = document.createTable();
-            //去表格边框
-            infoTable.getCTTbl().getTblPr().unsetTblBorders();
-
-            //列宽自动分割
-            CTTblWidth infoTableWidth = infoTable.getCTTbl().addNewTblPr().addNewTblW();
-            infoTableWidth.setType(STTblWidth.DXA);
-            infoTableWidth.setW(BigInteger.valueOf(9072));
-
-            //表格第一行
-            XWPFTableRow infoTableRowOne = infoTable.getRow(0);
-            infoTableRowOne.getCell(0).setText("职位");
-            infoTableRowOne.addNewTableCell().setText(": xxxx");
-
-            //表格第二行
-            XWPFTableRow infoTableRowTwo = infoTable.createRow();
-            infoTableRowTwo.getCell(0).setText("姓名");
-            infoTableRowTwo.getCell(1).setText(": xxxx");
-
-            //表格第三行
-            XWPFTableRow infoTableRowThree = infoTable.createRow();
-            infoTableRowThree.getCell(0).setText("生日");
-            infoTableRowThree.getCell(1).setText(": xxx-xx-xx");
-
-            //表格第四行
-            XWPFTableRow infoTableRowFour = infoTable.createRow();
-            infoTableRowFour.getCell(0).setText("性别");
-            infoTableRowFour.getCell(1).setText(": x");
-
-            //表格第五行
-            XWPFTableRow infoTableRowFive = infoTable.createRow();
-            infoTableRowFive.getCell(0).setText("现居地");
-            infoTableRowFive.getCell(1).setText(": xx");
+//            //基本信息表格
+//            XWPFTable infoTable = document.createTable();
+//            //去表格边框
+//            infoTable.getCTTbl().getTblPr().unsetTblBorders();
+//
+//            //列宽自动分割
+//            CTTblWidth infoTableWidth = infoTable.getCTTbl().addNewTblPr().addNewTblW();
+//            infoTableWidth.setType(STTblWidth.DXA);
+//            infoTableWidth.setW(BigInteger.valueOf(9072));
+//
+//            //表格第一行
+//            XWPFTableRow infoTableRowOne = infoTable.getRow(0);
+//            infoTableRowOne.getCell(0).setText("职位");
+//            infoTableRowOne.addNewTableCell().setText(": xxxx");
+//
+//            //表格第二行
+//            XWPFTableRow infoTableRowTwo = infoTable.createRow();
+//            infoTableRowTwo.getCell(0).setText("姓名");
+//            infoTableRowTwo.getCell(1).setText(": xxxx");
+//
+//            //表格第三行
+//            XWPFTableRow infoTableRowThree = infoTable.createRow();
+//            infoTableRowThree.getCell(0).setText("生日");
+//            infoTableRowThree.getCell(1).setText(": xxx-xx-xx");
+//
+//            //表格第四行
+//            XWPFTableRow infoTableRowFour = infoTable.createRow();
+//            infoTableRowFour.getCell(0).setText("性别");
+//            infoTableRowFour.getCell(1).setText(": x");
+//
+//            //表格第五行
+//            XWPFTableRow infoTableRowFive = infoTable.createRow();
+//            infoTableRowFive.getCell(0).setText("现居地");
+//            infoTableRowFive.getCell(1).setText(": xx");
 
             //两个表格之间加个换行
-            XWPFParagraph paragraph = document.createParagraph();
-            XWPFRun paragraphRun = paragraph.createRun();
-            paragraphRun.setText("\r");
+//            XWPFParagraph paragraph = document.createParagraph();
+//            XWPFRun paragraphRun = paragraph.createRun();
+//            paragraphRun.setText("\r");
+            lineBreak(document);
 
             //工作经历表格
             XWPFTable ComTable = document.createTable();
@@ -124,5 +125,12 @@ public class TestPOIWordOut {
             e.printStackTrace();
         }
         System.out.println("create_table document written success.");
+    }
+
+    public static void lineBreak(XWPFDocument document)
+    {
+        XWPFParagraph paragraph = document.createParagraph();
+        XWPFRun paragraphRun = paragraph.createRun();
+        paragraphRun.setText("\r");
     }
 }
