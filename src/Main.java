@@ -1,5 +1,7 @@
 import bean.StudentBean;
 import org.apache.poi.hssf.usermodel.*;
+
+import org.apache.poi.xwpf.usermodel.*;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFTable;
 import org.apache.poi.xwpf.usermodel.XWPFTableCell;
@@ -44,7 +46,7 @@ public class Main {
             String sql;
             sql = "select * from Student";
             ResultSet resultSet = db.search(sql,null);
-            ResultSetMetaData resultSetMetaData ;
+//            ResultSetMetaData resultSetMetaData ;
 /*----------------------数据库插入EXCEL定义变量↓------------------------------------*/
             int countColumnNum = resultSet.getMetaData().getColumnCount();
             int i =1;
@@ -55,7 +57,7 @@ public class Main {
             HSSFRow firstRow = sheet.createRow(0); //下标为0的行开始
             HSSFCell[] firstCell = new HSSFCell[countColumnNum];
 
-            String[] names = new String[countColumnNum];
+            String[] names = new String[countColumnNum];//此处应该用从表格导入的方式来进行修改，而不是直接定义数组
             names[0] ="id";
             names[1] ="name";
             names[2] ="sex";
@@ -70,24 +72,21 @@ public class Main {
 
             //列宽自动分割
             XWPFTable comTable = document.createTable();
+
             CTTblWidth comTableWidth = comTable.getCTTbl().addNewTblPr().addNewTblW();
             comTableWidth.setType(STTblWidth.DXA);
             comTableWidth.setW(BigInteger.valueOf(9072));
 
             XWPFTableCell [] firstWordCell = new XWPFTableCell[countColumnNum];
-            XWPFTableRow firstWordRow;
-            firstWordRow = comTable.getRow(0);
-            firstWordRow.getCell(0).setText(names[0]);
+
+            XWPFTableRow firstWordRow = comTable.getRow(0);
+            firstWordRow.getCell(0).setText(names[0]);//直接将0行0列放置于word表格中
+            //再通过循环方式将数据放入剩余表格中
             for (int j = 1 ; j < countColumnNum; j++)
             {
-
 //                firstWordCell[j] = firstWordRow.createCell();
 //                firstWordCell[j].setText(names[j]);
-
                 firstWordRow.addNewTableCell().setText(names[j]);
-
-
-
             }
 
             while (resultSet.next()) {
@@ -111,15 +110,23 @@ public class Main {
                     HSSFCell cell = excelRow.createCell(j);
                     cell.setCellValue(
                             new HSSFRichTextString(resultSet.getString(j+1)));
+
                 }
                 i++;
-
-
+/*----------------------数据库插入EXCEL循环打印↑------------------------------------*/
+/*↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓数据库插入word循环打印 while创建新行↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓*/
+                XWPFTableRow wordRow = comTable.createRow();
+                for (int j = 0; j < countColumnNum; j++)
+                {
+                    XWPFTableCell tableCell = wordRow.getCell(j);//空，无法找到行，需要创建行
+                    tableCell.setText(resultSet.getString(j+1));
+                }
+/*↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑数据库插入word循环打印 while创建新行↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑*/
             }
             FileOutputStream studentExcel;
             studentExcel = new FileOutputStream("test.xls");
             workBook.write(studentExcel);
-/*----------------------数据库插入EXCEL循环打印↑------------------------------------*/
+
 
             FileOutputStream studentWord;
             studentWord = new FileOutputStream("poi_word.docx");
