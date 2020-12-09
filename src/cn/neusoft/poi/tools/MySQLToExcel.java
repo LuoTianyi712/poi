@@ -12,9 +12,10 @@ public class MySQLToExcel {
 
     private final DBHelper db = new DBHelper();
     private final HSSFWorkbook workBook= new HSSFWorkbook();
+    private HSSFSheet sheet;
     private ResultSet resultSet;
     private int columnNum;
-    private HSSFSheet sheet;
+
 
     /***
      * 创建sheet并且自动添加数据库列名
@@ -52,12 +53,13 @@ public class MySQLToExcel {
 
     /***
      * 添加数据至sheet
+     * 自增变量i，用于循环增加row行数，向row中添加数据
      */
     public void addAllDataToSheet()
     {
         try
         {
-            int i =1;//自增变量，用于循环增加row行数，向row中添加数据
+            int i =1;
             while (resultSet.next())
             {
                 HSSFRow excelRow = sheet.createRow(i);
@@ -79,7 +81,6 @@ public class MySQLToExcel {
      */
     public void writeDataToFile(String filePath)
     {
-        //输出xls
         FileOutputStream studentExcel;
         try {
             studentExcel = new FileOutputStream(filePath);

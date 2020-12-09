@@ -5,7 +5,7 @@ import java.sql.*;
 public class DBHelper {
     // MySQL 8.0 以下版本 - JDBC 驱动名及数据库 URL
     private static final String jdbcDriver = "com.mysql.jdbc.Driver";
-    private static final String dbUrl = "jdbc:mysql://localhost:3306/TestDB?useSSL=false";
+    private static final String mysqlUrl = "jdbc:mysql://localhost:3306/TestDB?useSSL=false";
 
     // MySQL 8.0 以上版本 - JDBC 驱动名及数据库 URL
     //static final String JDBC_DRIVER = "com.mysql.cj.jdbc.Driver";
@@ -25,17 +25,11 @@ public class DBHelper {
     public void connectToMySql() {
         try {
             Class.forName(jdbcDriver);
-            connection = DriverManager.getConnection(dbUrl, user, password);
-        } catch (ClassNotFoundException e) {
-            System.err.println("无法找到JDBC驱动");
+            connection = DriverManager.getConnection(mysqlUrl, user, password);
+        } catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();
-        } catch (SQLException se) {
-            System.err.println("无法连接数据库");
-            se.printStackTrace();
         }
     }
-
-
     /***
      * MySQL查询表数据
      * @param sql
@@ -51,6 +45,12 @@ public class DBHelper {
         return resultSet;
     }
 
+    /***
+     * 测试用例，重载search
+     * @param sql
+     * @param str
+     * @return
+     */
     public ResultSet search(String sql, String[] str){
         try {
             prepareStatement = connection.prepareStatement(sql);
@@ -69,6 +69,8 @@ public class DBHelper {
 
     /***
      * 计算MySQL表行数
+     * last()检索当前行号。第一行是1，第二行是2，依此类推。
+     * 如果不写resultSet.last()，直接getRow，则只会获取到0行数据
      * @param sql
      * @return
      */
@@ -78,12 +80,11 @@ public class DBHelper {
             prepareStatement = connection.prepareStatement(sql);
             resultSet = prepareStatement.executeQuery();
             resultSet.last();
-            //检索当前行号。第一行是1，第二行是2，依此类推。
-            // 如果不写resultSet.last()，直接getRow，则只会获取到0行数据
+
             rowCount = resultSet.getRow();
 
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
+        } catch (SQLException se) {
+            se.printStackTrace();
         }
         return rowCount;
     }
@@ -101,8 +102,8 @@ public class DBHelper {
             prepareStatement = connection.prepareStatement(sql);
             resultSet = prepareStatement.executeQuery();
             columnCount = resultSet.getMetaData().getColumnCount();
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
+        } catch (SQLException se) {
+            se.printStackTrace();
         }
 
         return columnCount;

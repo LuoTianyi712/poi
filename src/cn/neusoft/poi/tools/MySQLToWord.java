@@ -19,12 +19,14 @@ public class MySQLToWord {
     private final DBHelper db = new DBHelper();
     private final XWPFDocument document = new XWPFDocument();
     private final XWPFTable comTable = document.createTable();
-    private ResultSet resultSet;
     private XWPFTableRow wordRow;
+    private ResultSet resultSet;
     private int countColumnNum;
 
     /***
      * 创建word表格
+     * 列宽自动分割
+     * s通过循环方式将数据放入剩余表格中
      */
     public void createWordForm()
     {
@@ -42,9 +44,8 @@ public class MySQLToWord {
             for (int i = 0; i<countColumnNum; i++)
             {
                 names[i] = resultSet.getMetaData().getColumnName(i+1);
-//                System.out.println(resultSet.getMetaData().getColumnName(i+1));
+                //System.out.println(resultSet.getMetaData().getColumnName(i+1));
             }
-            //列宽自动分割
             CTTblWidth comTableWidth = comTable.getCTTbl().addNewTblPr().addNewTblW();
             comTableWidth.setType(STTblWidth.DXA);
             comTableWidth.setW(BigInteger.valueOf(9072));
@@ -52,7 +53,6 @@ public class MySQLToWord {
             wordRow = comTable.getRow(0);
             wordRow.getCell(0).setText(names[0]);//直接将0行0列放置于word表格中
 
-            //再通过循环方式将数据放入剩余表格中
             for (int j = 1 ; j < countColumnNum; j++)
             {
                 wordRow.addNewTableCell().setText(names[j]);
@@ -74,7 +74,7 @@ public class MySQLToWord {
                 wordRow = comTable.createRow();
                 for (int j = 0; j < countColumnNum; j++)
                 {
-                    XWPFTableCell tableCell = wordRow.getCell(j);//空，无法找到行，需要创建行
+                    XWPFTableCell tableCell = wordRow.getCell(j);
                     tableCell.setText(resultSet.getString(j+1));
                 }
             }
