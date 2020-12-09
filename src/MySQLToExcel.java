@@ -1,149 +1,87 @@
-import bean.StudentBean;
-import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.hssf.usermodel.*;
 import util.DBHelper;
 
-import java.io.*;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.sql.ResultSet;
-import java.util.Scanner;
+import java.sql.SQLException;
 
 public class MySQLToExcel {
-//    public static void main(String [] args){
-//
-//        String [] title = {"id", "name", "sex", "birth"};
-//
-//        HSSFWorkbook workbook = new HSSFWorkbook();
-//        HSSFSheet sheet = workbook.createSheet("student");
-//
-//        HSSFRow sheetRow = sheet.createRow(0);
-//        HSSFCell sheetCell = null;
-//
-//        for (int row = 0; row < 5; row++) {
-//            sheetRow = sheet.createRow(row);
-//            for (int column = 0; column < title.length; column++) {
-//                sheetRow.createCell(column).setCellValue(title[column]);
-//            }
-//        }
-//
-//        try {
-//            workbook.write(new FileOutputStream(new File("test.xls")));
-//            workbook.close();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//
-//    }
 
-//    public static void main(String [] args)
-//    {
-//        String [] title = {"id", "name", "sex", "birth"};
-//
-//        FileOutputStream studentExcel;
-//
-//        HSSFWorkbook workbook = new HSSFWorkbook();
-//        HSSFSheet sheet = workbook.createSheet("student");
-//
-//        HSSFRow sheetRow = sheet.createRow(0);
-//        HSSFCell sheetCell = null;
-//
-//        sheetRow.createCell(0).setCellValue("id");
-//        sheetRow.createCell(1).setCellValue("name");
-//        sheetRow.createCell(2).setCellValue("sex");
-//        sheetRow.createCell(3).setCellValue("birth");
-//
-////        Scanner
-//
-//        for (int row = 1; row < 2; row++)
-//        {
-//            sheetRow = sheet.createRow(row);
-//
-//            for (int column = 0; column < title.length; column++)
-//            {
-//                sheetRow.createCell(column).setCellValue(title[column]);
-//            }
-//        }
-//
-//        try {
-//            studentExcel = new FileOutputStream("test.xls");
-//            workbook.write(studentExcel);
-//            workbook.close();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
+    private final DBHelper db = new DBHelper();
+    // 创建Excel文档
+    private final HSSFWorkbook workBook= new HSSFWorkbook();
+    private ResultSet resultSet;
+    private int columnNum;
+    private HSSFSheet sheet;
 
-    DBHelper db = new DBHelper();
-
-    String sql = "select * from Student";;
-
-//    String [] title = {"id", "name", "sex", "birth"};
-
-    FileOutputStream studentExcel;
-
-    HSSFWorkbook workbook = new HSSFWorkbook();
-    //new出来的对象，是赋值给了workbook这个变量，存储在内存里面
-    //我可以做什么？我可以对这个变量做什么，我可以调用里面的函数，可以对其进行执行
-
-    HSSFSheet sheet = workbook.createSheet("student");//创建表
-
-    HSSFRow sheetRow = sheet.createRow(0);
-    HSSFCell sheetCell = null;
-
-    public void insertDataToExcel(StudentBean studentBean){
-
-        sheetRow.createCell(0).setCellValue("id");
-        sheetRow.createCell(1).setCellValue("name");
-        sheetRow.createCell(2).setCellValue("sex");
-        sheetRow.createCell(3).setCellValue("birth");
-
-        //数据库添加数据在此执行
+    public void createSheet(String sheetName)
+    {
         db.connectToMySql();
 
         try {
+            String sql = "select * from Student";
+            resultSet = db.search(sql);
+            columnNum = db.countColumn(sql);
+            sheet = workBook.createSheet(sheetName);
+            String[] names = new String[columnNum];
 
-            for (int row = 1; row < db.countRow(sql); row++)//这里则需要改成行数
-            {
-                //在这里创建对象的意义是？对象创建出来了，赋值给变量？
-               HSSFRow sheetRow = sheet.createRow(db.countRow(sql));
-
-                for (int column = 0; column < db.countColumn(sql); column++)//这里需要把条件改成列数，怎么获取列数
-                {
-                    //有问题，数据库数据读取到了，没有存放在excel中，
-                    // 即将编写一个list，将数据存入list中，再读取list
-//                    sheetRow.createCell(column).setCellValue(columnNum);
-
-                    sheetRow.createCell(db.countColumn(sql)).setCellValue(studentBean.getStuId());
-                    sheetRow.createCell(db.countColumn(sql)).setCellValue(studentBean.getStuName());
-                    sheetRow.createCell(db.countColumn(sql)).setCellValue(studentBean.getStuSex());
-                    sheetRow.createCell(db.countColumn(sql)).setCellValue(studentBean.getStuBirth());
-                }
+            //循环将列名存放到names数组中
+            for (int i = 0; i<columnNum; i++) {
+                names[i] = resultSet.getMetaData().getColumnName(i+1);
             }
 
-//           int i = 1;
-//            HSSFRow hssfRow = sheet.createRow(i);
-//
-//            for (int j = 0; j < db.countColumn() ; j++)
-//            {
-//                HSSFCell hssfCell = hssfRow.createCell(j);
-//                hssfCell.setCellValue(studentBean.getStuId());
-//                hssfCell.setCellValue(studentBean.getStuName());
-//                hssfCell.setCellValue(studentBean.getStuSex());
-//                hssfCell.setCellValue(studentBean.getStuBirth());
-//            }
-//            i++;
+            //创建第一行，第一列
+            HSSFRow firstRow = sheet.createRow(0);
+            HSSFCell[] firstCell = new HSSFCell[columnNum];
+            //循环将数据库表头输入第一列
+            for (int j= 0 ;j<columnNum; j++)
+            {
+                firstCell[j] = firstRow.createCell(j);
+                firstCell[j].setCellValue(new HSSFRichTextString(names[j]));
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
 
-        //将数据插入文件
+    public void addAllDataToSheet()
+    {
         try {
-            studentExcel = new FileOutputStream("test.xls");
-            workbook.write(studentExcel);
-            workbook.close();
-        } catch (IOException e) {
+            int i =1;//自增变量，用于循环增加row行数，向row中添加数据
+            while (resultSet.next())
+            {
+                HSSFRow excelRow = sheet.createRow(i);
+                for (int j = 0 ; j < columnNum ; j++)
+                {
+                    HSSFCell cell = excelRow.createCell(j);
+                    cell.setCellValue(resultSet.getString(j+1));
+                }
+                i++;
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+    }
+
+    /***
+     * 文档输出
+     * @param filePath
+     */
+    public void writeDataToFile(String filePath)
+    {
+        //输出xls
+        FileOutputStream studentExcel;
+        try {
+            studentExcel = new FileOutputStream(filePath);
+            workBook.write(studentExcel);
+
+            if (resultSet != null){
+                resultSet.close();
+            }
+            System.out.println("resultSet关闭，文件输出成功");
+        } catch (IOException | SQLException e) {
             e.printStackTrace();
         }
     }

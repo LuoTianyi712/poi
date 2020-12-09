@@ -1,7 +1,5 @@
 import bean.StudentBean;
-import org.apache.poi.hssf.usermodel.*;
 
-import org.apache.poi.xwpf.usermodel.*;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFTable;
 import org.apache.poi.xwpf.usermodel.XWPFTableCell;
@@ -10,39 +8,20 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTblWidth;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STTblWidth;
 import util.DBHelper;
 
-import java.io.File;
 import java.io.FileOutputStream;
 import java.math.BigInteger;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
+
 /*------------------------------------------------------------------------------*/
 public class Main {
     public static void main(String [] args)
     {
         //实例化属性对象
         DBHelper db = new DBHelper();
-        //这个是一个对象，也就是只能被反复使用，而不是说有无数个可以赋值，因为我只写了一个
-        //疑问，如果实例化对象放在while或者for循环里，是不是会反复创建对象?
         StudentBean stuBean = new StudentBean();
         MySQLToExcel mySQLToExcel = new MySQLToExcel();
-        XWPFDocument document = new XWPFDocument();
 
         try {
-//            //注册JDBC驱动
-//            Class.forName(util.DBHelper.jdbcDriver);
-//
-//            //打开链接
-//            System.studentWord.println("连接数据库");
-//            connection = DriverManager.getConnection(
-//                    util.DBHelper.dbUrl,
-//                    util.DBHelper.user,
-//                    util.DBHelper.password);
-//
-//            // 执行查询
-//            System.studentWord.println(" 实例化Statement对象...");
-//            statement = connection.createStatement();
-//            ResultSet resultSet = statement.executeQuery(sql);
             db.connectToMySql();
 
             String sql;
@@ -64,23 +43,7 @@ public class Main {
                 names[i] = resultSet.getMetaData().getColumnName(i+1);
                 System.out.println(resultSet.getMetaData().getColumnName(i+1));
             }
-
-/*↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓数据库插入EXCEL定义变量↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓*/
-            int i =1;
-            // 创建Excel文档
-            HSSFWorkbook workBook = new HSSFWorkbook() ;
-            // sheet 对应一个工作页
-            HSSFSheet sheet = workBook.createSheet("student") ;
-            HSSFRow firstRow = sheet.createRow(0); //下标为0的行开始
-            HSSFCell[] firstCell = new HSSFCell[countColumnNum];
-
-            for(int j= 0 ;j<countColumnNum; j++)
-            {
-                firstCell[j] = firstRow.createCell(j);
-                firstCell[j].setCellValue(new HSSFRichTextString(names[j]));
-            }
-/*↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑数据库插入EXCEL定义变量↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑*/
-
+            XWPFDocument document = new XWPFDocument();
             //列宽自动分割
             XWPFTable comTable = document.createTable();
 
@@ -100,7 +63,8 @@ public class Main {
                 wordRow.addNewTableCell().setText(names[j]);
             }
 
-            while (resultSet.next()) {
+            while (resultSet.next())
+            {
 //                StudentBean stuBean = new StudentBean();
                 // 会反复赋值吗？会一行一行添加数据吗？
                 //不需要循环创建对象，因为会占堆内存，只需要创建一个对象，然后循环赋值给他
@@ -116,17 +80,6 @@ public class Main {
                 System.out.println("学生性别" + "\t\t" + stuBean.getStuSex());
                 System.out.println("学生生日" + "\t\t" + stuBean.getStuBirth());
                 System.out.println();
-/*↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓数据库插入EXCEL循环打印↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓*/
-
-//                mySQLToExcel.insertDataToExcel(stuBean);//插入数据到excel
-                HSSFRow excelRow = sheet.createRow(i);
-                for (int j = 0 ; j < countColumnNum ; j++)
-                {
-                    HSSFCell cell = excelRow.createCell(j);
-                    cell.setCellValue(new HSSFRichTextString(resultSet.getString(j+1)));
-                }
-                i++;
-/*↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑数据库插入EXCEL循环打印↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑*/
 /*↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓数据库插入word循环打印 while创建新行↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓*/
 //                XWPFTableRow wordRow = comTable.createRow();
                 wordRow = comTable.createRow();
@@ -137,10 +90,10 @@ public class Main {
                 }
 /*↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑数据库插入word循环打印 while创建新行↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑*/
             }
-            //输出xls
-            FileOutputStream studentExcel;
-            studentExcel = new FileOutputStream("poi_student.xls");
-            workBook.write(studentExcel);
+
+            mySQLToExcel.createSheet("student");
+            mySQLToExcel.addAllDataToSheet();
+            mySQLToExcel.writeDataToFile("poi_student.xls");
 
             //输出word文档
             FileOutputStream studentWord;
