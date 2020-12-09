@@ -26,7 +26,7 @@ public class MySQLToWord {
     /***
      * 创建word表格
      * 列宽自动分割
-     * s通过循环方式将数据放入剩余表格中
+     * 通过循环方式将数据放入剩余表格中
      */
     public void createWordForm()
     {
@@ -43,7 +43,7 @@ public class MySQLToWord {
 
             for (int i = 0; i<countColumnNum; i++)
             {
-                names[i] = resultSet.getMetaData().getColumnName(i+1);
+                names[i] = resultSet.getMetaData().getColumnName(++i);
                 //System.out.println(resultSet.getMetaData().getColumnName(i+1));
             }
             CTTblWidth comTableWidth = comTable.getCTTbl().addNewTblPr().addNewTblW();
@@ -75,7 +75,7 @@ public class MySQLToWord {
                 for (int j = 0; j < countColumnNum; j++)
                 {
                     XWPFTableCell tableCell = wordRow.getCell(j);
-                    tableCell.setText(resultSet.getString(j+1));
+                    tableCell.setText(resultSet.getString(++j));
                 }
             }
         } catch (SQLException se) {
@@ -103,4 +103,3 @@ public class MySQLToWord {
         }
     }
 }
-

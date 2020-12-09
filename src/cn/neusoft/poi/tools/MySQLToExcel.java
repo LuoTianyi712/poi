@@ -33,7 +33,7 @@ public class MySQLToExcel {
             String[] names = new String[columnNum];
 
             for (int i = 0; i<columnNum; i++) {
-                names[i] = resultSet.getMetaData().getColumnName(i+1);
+                names[i] = resultSet.getMetaData().getColumnName(++i);
 //                System.out.println(names[i]);
             }
 
@@ -66,7 +66,7 @@ public class MySQLToExcel {
                 for (int j = 0 ; j < columnNum ; j++)
                 {
                     HSSFCell cell = excelRow.createCell(j);
-                    cell.setCellValue(resultSet.getString(j+1));
+                    cell.setCellValue(resultSet.getString(++j));
                 }
                 i++;
             }

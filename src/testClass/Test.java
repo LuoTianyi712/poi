@@ -26,11 +26,3 @@ public class Test {
         dbHelper.disconnectToMysql();
     }
 }
-
-class Test2
-{
-    @Override
-    public int hashCode() {
-        return super.hashCode();
-    }
-}

@@ -8,7 +8,7 @@ import cn.neusoft.poi.util.DBHelper;
 
 import java.sql.ResultSet;
 
-public class Main {
+public class MainMethod {
     public static void main(String [] args)
     {
         DBHelper db = new DBHelper();
