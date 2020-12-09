@@ -1,15 +1,7 @@
 import bean.StudentBean;
 
-import org.apache.poi.xwpf.usermodel.XWPFDocument;
-import org.apache.poi.xwpf.usermodel.XWPFTable;
-import org.apache.poi.xwpf.usermodel.XWPFTableCell;
-import org.apache.poi.xwpf.usermodel.XWPFTableRow;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTblWidth;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.STTblWidth;
 import util.DBHelper;
 
-import java.io.FileOutputStream;
-import java.math.BigInteger;
 import java.sql.ResultSet;
 
 /*------------------------------------------------------------------------------*/
@@ -97,8 +89,8 @@ public class Main {
             mySQLToExcel.writeDataToFile("poi_student.xls");
 
             mySQLToWord.createWordForm();
-            mySQLToWord.addDateToForm();
-            mySQLToWord.writeFormToDocx();
+            mySQLToWord.addAllDateToWordForm();
+            mySQLToWord.writeFormToDocx("poi_student.docx");
 
 //            //输出word文档
 //            FileOutputStream studentWord;

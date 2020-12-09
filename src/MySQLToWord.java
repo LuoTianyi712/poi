@@ -15,18 +15,17 @@ import java.sql.SQLException;
 
 public class MySQLToWord {
 
-    DBHelper db = new DBHelper();
-    XWPFDocument document = new XWPFDocument();
-    //列宽自动分割
-    XWPFTable comTable = document.createTable();
-    ResultSet resultSet;
-    XWPFTableRow wordRow;
-    String sql = "select * from Student";
-    int countColumnNum;
+    private final DBHelper db = new DBHelper();
+    private final XWPFDocument document = new XWPFDocument();
+    private final XWPFTable comTable = document.createTable();
+    private ResultSet resultSet;
+    private XWPFTableRow wordRow;
+    private int countColumnNum;
 
     public void createWordForm()
     {
         db.connectToMySql();
+        String sql = "select * from Student";
         countColumnNum = db.countColumn(sql);
 
         resultSet = db.search(sql);
@@ -41,7 +40,7 @@ public class MySQLToWord {
                 names[i] = resultSet.getMetaData().getColumnName(i+1);
                 System.out.println(resultSet.getMetaData().getColumnName(i+1));
             }
-            //自适应列宽
+            //列宽自动分割
             CTTblWidth comTableWidth = comTable.getCTTbl().addNewTblPr().addNewTblW();
             comTableWidth.setType(STTblWidth.DXA);
             comTableWidth.setW(BigInteger.valueOf(9072));
@@ -60,7 +59,7 @@ public class MySQLToWord {
         }
     }
 
-    public void addDateToForm()
+    public void addAllDateToWordForm()
     {
         try {
             while (resultSet.next())
@@ -77,11 +76,11 @@ public class MySQLToWord {
         }
     }
 
-    public void writeFormToDocx()
+    public void writeFormToDocx(String filePath)
     {
         try {
             FileOutputStream studentWord;
-            studentWord = new FileOutputStream("poi_student.docx");
+            studentWord = new FileOutputStream(filePath);
             document.write(studentWord);
         } catch (IOException e) {
             e.printStackTrace();
