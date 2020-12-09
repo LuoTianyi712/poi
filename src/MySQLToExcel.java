@@ -15,7 +15,7 @@ public class MySQLToExcel {
     private int columnNum;
     private HSSFSheet sheet;
 
-    public void createSheet(String sheetName)
+    public void createExcelSheet(String sheetName)
     {
         db.connectToMySql();
 

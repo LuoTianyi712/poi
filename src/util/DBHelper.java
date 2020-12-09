@@ -25,9 +25,9 @@ public class DBHelper {
         } catch (ClassNotFoundException e) {
             System.err.println("无法找到JDBC驱动");
             e.printStackTrace();
-        } catch (SQLException e) {
+        } catch (SQLException se) {
             System.err.println("无法连接数据库");
-            e.printStackTrace();
+            se.printStackTrace();
         }
     }
 

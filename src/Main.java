@@ -20,6 +20,7 @@ public class Main {
         DBHelper db = new DBHelper();
         StudentBean stuBean = new StudentBean();
         MySQLToExcel mySQLToExcel = new MySQLToExcel();
+        MySQLToWord mySQLToWord = new MySQLToWord();
 
         try {
             db.connectToMySql();
@@ -29,39 +30,39 @@ public class Main {
 
             ResultSet resultSet = db.search(sql);
 //            int countColumnNum = resultSet.getMetaData().getColumnCount();
-            int countColumnNum;
-            countColumnNum = db.countColumn(sql);
-            String[] names = new String[countColumnNum];
-            //此处应该用从数据库导入列名的方式来进行修改，而不是直接定义数组
-//            names[0] ="id";
-//            names[1] ="name";
-//            names[2] ="sex";
-//            names[3] ="birth";
-
-            for (int i = 0; i<countColumnNum; i++)
-            {
-                names[i] = resultSet.getMetaData().getColumnName(i+1);
-                System.out.println(resultSet.getMetaData().getColumnName(i+1));
-            }
-            XWPFDocument document = new XWPFDocument();
-            //列宽自动分割
-            XWPFTable comTable = document.createTable();
-
-            CTTblWidth comTableWidth = comTable.getCTTbl().addNewTblPr().addNewTblW();
-            comTableWidth.setType(STTblWidth.DXA);
-            comTableWidth.setW(BigInteger.valueOf(9072));
-
-//            XWPFTableCell [] firstWordCell = new XWPFTableCell[countColumnNum];
-
-            XWPFTableRow wordRow = comTable.getRow(0);
-            wordRow.getCell(0).setText(names[0]);//直接将0行0列放置于word表格中
-            //再通过循环方式将数据放入剩余表格中
-            for (int j = 1 ; j < countColumnNum; j++)
-            {
-//                firstWordCell[j] = wordRow.createCell();
-//                firstWordCell[j].setText(names[j]);
-                wordRow.addNewTableCell().setText(names[j]);
-            }
+//            int countColumnNum;
+//            countColumnNum = db.countColumn(sql);
+//            String[] names = new String[countColumnNum];
+//            //此处应该用从数据库导入列名的方式来进行修改，而不是直接定义数组
+////            names[0] ="id";
+////            names[1] ="name";
+////            names[2] ="sex";
+////            names[3] ="birth";
+//
+//            for (int i = 0; i<countColumnNum; i++)
+//            {
+//                names[i] = resultSet.getMetaData().getColumnName(i+1);
+//                System.out.println(resultSet.getMetaData().getColumnName(i+1));
+//            }
+//            XWPFDocument document = new XWPFDocument();
+//            //列宽自动分割
+//            XWPFTable comTable = document.createTable();
+//
+//            CTTblWidth comTableWidth = comTable.getCTTbl().addNewTblPr().addNewTblW();
+//            comTableWidth.setType(STTblWidth.DXA);
+//            comTableWidth.setW(BigInteger.valueOf(9072));
+//
+////            XWPFTableCell [] firstWordCell = new XWPFTableCell[countColumnNum];
+//
+//            XWPFTableRow wordRow = comTable.getRow(0);
+//            wordRow.getCell(0).setText(names[0]);//直接将0行0列放置于word表格中
+//            //再通过循环方式将数据放入剩余表格中
+//            for (int j = 1 ; j < countColumnNum; j++)
+//            {
+////                firstWordCell[j] = wordRow.createCell();
+////                firstWordCell[j].setText(names[j]);
+//                wordRow.addNewTableCell().setText(names[j]);
+//            }
 
             while (resultSet.next())
             {
@@ -80,25 +81,29 @@ public class Main {
                 System.out.println("学生性别" + "\t\t" + stuBean.getStuSex());
                 System.out.println("学生生日" + "\t\t" + stuBean.getStuBirth());
                 System.out.println();
-/*↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓数据库插入word循环打印 while创建新行↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓*/
-//                XWPFTableRow wordRow = comTable.createRow();
-                wordRow = comTable.createRow();
-                for (int j = 0; j < countColumnNum; j++)
-                {
-                    XWPFTableCell tableCell = wordRow.getCell(j);//空，无法找到行，需要创建行
-                    tableCell.setText(resultSet.getString(j+1));
-                }
-/*↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑数据库插入word循环打印 while创建新行↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑*/
+///*↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓数据库插入word循环打印 while创建新行↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓*/
+////                XWPFTableRow wordRow = comTable.createRow();
+//                wordRow = comTable.createRow();
+//                for (int j = 0; j < countColumnNum; j++)
+//                {
+//                    XWPFTableCell tableCell = wordRow.getCell(j);//空，无法找到行，需要创建行
+//                    tableCell.setText(resultSet.getString(j+1));
+//                }
+///*↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑数据库插入word循环打印 while创建新行↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑*/
             }
 
-            mySQLToExcel.createSheet("student");
+            mySQLToExcel.createExcelSheet("student");
             mySQLToExcel.addAllDataToSheet();
             mySQLToExcel.writeDataToFile("poi_student.xls");
 
-            //输出word文档
-            FileOutputStream studentWord;
-            studentWord = new FileOutputStream("poi_student.docx");
-            document.write(studentWord);
+            mySQLToWord.createWordForm();
+            mySQLToWord.addDateToForm();
+            mySQLToWord.writeFormToDocx();
+
+//            //输出word文档
+//            FileOutputStream studentWord;
+//            studentWord = new FileOutputStream("poi_student.docx");
+//            document.write(studentWord);
 
             resultSet.close();
             db.disconnectToMysql();
