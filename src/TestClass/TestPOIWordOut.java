@@ -1,3 +1,5 @@
+package TestClass;
+
 import org.apache.poi.xwpf.usermodel.*;
 
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTShd;
@@ -127,7 +129,7 @@ public class TestPOIWordOut {
         System.out.println("create_table document written success.");
     }
 
-    public static void lineBreak(XWPFDocument document)
+    public static void lineBreak(XWPFDocument document)//换行
     {
         XWPFParagraph paragraph = document.createParagraph();
         XWPFRun paragraphRun = paragraph.createRun();

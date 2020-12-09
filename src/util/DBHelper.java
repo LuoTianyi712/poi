@@ -4,91 +4,106 @@ import java.sql.*;
 
 public class DBHelper {
     // MySQL 8.0 以下版本 - JDBC 驱动名及数据库 URL
-    static final String jdbcDriver = "com.mysql.jdbc.Driver";
-    static final String dbUrl = "jdbc:mysql://localhost:3306/TestDB?useSSL=false";
+    private static final String jdbcDriver = "com.mysql.jdbc.Driver";
+    private static final String dbUrl = "jdbc:mysql://localhost:3306/TestDB?useSSL=false";
 
     // MySQL 8.0 以上版本 - JDBC 驱动名及数据库 URL
     //static final String JDBC_DRIVER = "com.mysql.cj.jdbc.Driver";
     //static final String DB_URL = "jdbc:mysql://localhost:3306/TestDB?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC";
 
-
     // 数据库的用户名与密码，需要根据自己的设置
-    static final String user = "root";
-    static final String password = "root";
+    private static final String user = "root";
+    private static final String password = "root";
 
-    public Connection connection = null;
-    public PreparedStatement prepareStatement = null;
-    public ResultSet resultSet = null;
+    private Connection connection = null;
+    ResultSet resultSet = null;
 
     public void connectToMySql() {
         try {
             Class.forName(jdbcDriver);
             connection = DriverManager.getConnection(dbUrl, user, password);
         } catch (ClassNotFoundException e) {
-            // TODO Auto-generated catch block
-            System.err.println("装载 JDBC/ODBC 驱动程序失败。" );
+            System.err.println("无法找到JDBC驱动");
             e.printStackTrace();
         } catch (SQLException e) {
-            // TODO Auto-generated catch block
-            System.err.println("无法连接数据库" );
+            System.err.println("无法连接数据库");
             e.printStackTrace();
         }
     }
 
     //查询
-    public ResultSet search(String sql, String [] str){
-        connectToMySql();
+//    public ResultSet search(String sql, String [] str){
+    public ResultSet search(String sql){
+        PreparedStatement prepareStatement;
         try {
             prepareStatement = connection.prepareStatement(sql);
-            if(str != null){
-                for(int i=0;i<str.length-1;i++){
-                    prepareStatement.setString(i+1, str[i]);
-                }
-                prepareStatement.setInt(str.length, Integer.parseInt(str[str.length-1]));
-            }
+//            if(str != null){
+//                for(int i=0;i<str.length-1;i++){
+//                    prepareStatement.setString(i+1, str[i]);
+//                }
+//                prepareStatement.setInt(str.length, Integer.parseInt(str[str.length-1]));
+//            }
             resultSet = prepareStatement.executeQuery();
         } catch (SQLException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
-//        disconnectToMysql();
         return resultSet;
     }
 
     //计算行数
-    public int countRow(){
+    public int countRow(String sql){
 
-//        connectToMySql();
+        PreparedStatement prepareStatement;
+        ResultSet resultSet;
         int rowCount = 0;
         try {
-            prepareStatement = connection.prepareStatement("select * from student");
+            prepareStatement = connection.prepareStatement(sql);
             resultSet = prepareStatement.executeQuery();
             resultSet.last();//检索当前行号。第一行是1，第二行是2，依此类推。
+            // 如果不写直接getRow则只会获取到0行数据
             rowCount = resultSet.getRow();
+
+            //关闭资源
+            if(prepareStatement != null)
+            {
+                prepareStatement.close();
+            }
+            if (resultSet != null)
+            {
+                resultSet.close();
+            }
 
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
-//        Integer.parseInt(String.valueOf(resultSet));
-//        System.out.println(rowCount);
-//        disconnectToMysql();
         return rowCount;
     }
 
     //计算列数
-    public int countColumn(){
-//        connectToMySql();
+    public int countColumn(String sql){
+
+        //创建变量
+        PreparedStatement prepareStatement;
+        ResultSet resultSet = null;
         int columnCount = 0;
+
         try {
-//            prepareStatement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_UPDATABLE);
-            resultSet = prepareStatement.executeQuery("select * from student");
-            ResultSetMetaData rsmd = resultSet.getMetaData() ;
-            columnCount = rsmd.getColumnCount();
+            prepareStatement = connection.prepareStatement(sql);
+            resultSet = prepareStatement.executeQuery();
+            columnCount = resultSet.getMetaData().getColumnCount();
+            //关闭资源
+            if(prepareStatement != null)
+            {
+                prepareStatement.close();
+            }
+            if (resultSet != null)
+            {
+                resultSet.close();
+            }
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
-//        System.out.println(columnCount);
-//        disconnectToMysql();
+
         return columnCount;
     }
 
@@ -97,12 +112,17 @@ public class DBHelper {
     {
         try
         {
-            connection.close();
-            prepareStatement.close();
-            resultSet.close();
+            if (connection != null) {
+                connection.close();
+            }
+            if (resultSet != null){
+                resultSet.close();
+            }
+
         } catch (SQLException e)
         {
             e.printStackTrace();
         }
+        System.out.println("连接关闭");
     }
 }
