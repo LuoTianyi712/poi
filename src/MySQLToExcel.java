@@ -48,7 +48,8 @@ public class MySQLToExcel {
 
     public void addAllDataToSheet()
     {
-        try {
+        try
+        {
             int i =1;//自增变量，用于循环增加row行数，向row中添加数据
             while (resultSet.next())
             {
@@ -80,7 +81,7 @@ public class MySQLToExcel {
             if (resultSet != null){
                 resultSet.close();
             }
-            System.out.println("resultSet关闭，文件输出成功");
+            System.out.println("xls文件输出成功");
         } catch (IOException | SQLException e) {
             e.printStackTrace();
         }
