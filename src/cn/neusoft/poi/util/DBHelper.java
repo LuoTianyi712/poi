@@ -1,4 +1,4 @@
-package util;
+package cn.neusoft.poi.util;
 
 import java.sql.*;
 
@@ -11,13 +11,17 @@ public class DBHelper {
     //static final String JDBC_DRIVER = "com.mysql.cj.jdbc.Driver";
     //static final String DB_URL = "jdbc:mysql://localhost:3306/TestDB?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC";
 
-    // 数据库的用户名与密码，需要根据自己的设置
+    // MySQL用户名与密码
     private static final String user = "root";
     private static final String password = "root";
 
     private Connection connection = null;
-    ResultSet resultSet = null;
+    private ResultSet resultSet = null;
+    private PreparedStatement prepareStatement = null;
 
+    /***
+     * 连接数据库
+     */
     public void connectToMySql() {
         try {
             Class.forName(jdbcDriver);
@@ -31,18 +35,15 @@ public class DBHelper {
         }
     }
 
-    //查询
-//    public ResultSet search(String sql, String [] str){
+
+    /***
+     * MySQL查询表数据
+     * @param sql
+     * @return
+     */
     public ResultSet search(String sql){
-        PreparedStatement prepareStatement;
         try {
             prepareStatement = connection.prepareStatement(sql);
-//            if(str != null){
-//                for(int i=0;i<str.length-1;i++){
-//                    prepareStatement.setString(i+1, str[i]);
-//                }
-//                prepareStatement.setInt(str.length, Integer.parseInt(str[str.length-1]));
-//            }
             resultSet = prepareStatement.executeQuery();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -50,28 +51,36 @@ public class DBHelper {
         return resultSet;
     }
 
-    //计算行数
-    public int countRow(String sql){
+    public ResultSet search(String sql, String[] str){
+        try {
+            prepareStatement = connection.prepareStatement(sql);
+            if(str != null){
+                for(int i=0;i<str.length-1;i++){
+                    prepareStatement.setString(i+1, str[i]);
+                }
+                prepareStatement.setInt(str.length, Integer.parseInt(str[str.length-1]));
+            }
+            resultSet = prepareStatement.executeQuery();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return resultSet;
+    }
 
-        PreparedStatement prepareStatement;
-        ResultSet resultSet;
+    /***
+     * 计算MySQL表行数
+     * @param sql
+     * @return
+     */
+    public int countRow(String sql){
         int rowCount = 0;
         try {
             prepareStatement = connection.prepareStatement(sql);
             resultSet = prepareStatement.executeQuery();
-            resultSet.last();//检索当前行号。第一行是1，第二行是2，依此类推。
-            // 如果不写直接getRow则只会获取到0行数据
+            resultSet.last();
+            //检索当前行号。第一行是1，第二行是2，依此类推。
+            // 如果不写resultSet.last()，直接getRow，则只会获取到0行数据
             rowCount = resultSet.getRow();
-
-            //关闭资源
-            if(prepareStatement != null)
-            {
-                prepareStatement.close();
-            }
-            if (resultSet != null)
-            {
-                resultSet.close();
-            }
 
         } catch (SQLException throwables) {
             throwables.printStackTrace();
@@ -79,27 +88,19 @@ public class DBHelper {
         return rowCount;
     }
 
-    //计算列数
+    /***
+     * 计算MySQL表列数
+     * @param sql
+     * @return
+     */
     public int countColumn(String sql){
 
-        //创建变量
-        PreparedStatement prepareStatement;
-        ResultSet resultSet = null;
         int columnCount = 0;
 
         try {
             prepareStatement = connection.prepareStatement(sql);
             resultSet = prepareStatement.executeQuery();
             columnCount = resultSet.getMetaData().getColumnCount();
-            //关闭资源
-            if(prepareStatement != null)
-            {
-                prepareStatement.close();
-            }
-            if (resultSet != null)
-            {
-                resultSet.close();
-            }
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
@@ -107,22 +108,28 @@ public class DBHelper {
         return columnCount;
     }
 
-    //关闭连接
+    /***
+     * 关闭MySQL连接，
+     * 释放资源
+     */
     public void disconnectToMysql()
     {
         try
         {
+            System.out.println("\n关闭所有连接...");
             if (connection != null) {
                 connection.close();
+            }
+            if (prepareStatement != null) {
+                prepareStatement.close();
             }
             if (resultSet != null){
                 resultSet.close();
             }
-
-        } catch (SQLException e)
+        } catch (SQLException se)
         {
-            e.printStackTrace();
+            se.printStackTrace();
         }
-        System.out.println("连接关闭");
+        System.out.println("所有连接已关闭");
     }
 }

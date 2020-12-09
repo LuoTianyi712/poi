@@ -1,4 +1,4 @@
-package bean;
+package cn.neusoft.poi.bean;
 
 public class StudentBean {
 

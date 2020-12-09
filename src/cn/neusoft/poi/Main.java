@@ -1,10 +1,13 @@
-import bean.StudentBean;
+package cn.neusoft.poi;
 
-import util.DBHelper;
+import cn.neusoft.poi.bean.StudentBean;
+
+import cn.neusoft.poi.tools.MySQLToExcel;
+import cn.neusoft.poi.tools.MySQLToWord;
+import cn.neusoft.poi.util.DBHelper;
 
 import java.sql.ResultSet;
 
-/*------------------------------------------------------------------------------*/
 public class Main {
     public static void main(String [] args)
     {
@@ -43,9 +46,8 @@ public class Main {
             resultSet.close();
             db.disconnectToMysql();
 
-        } catch (Exception se) {
-            //处理JDBC错误
-            se.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         //处理Class.forName
 //        finally {
@@ -63,6 +65,6 @@ public class Main {
 //                se.printStackTrace();
 //            }
 //        }
-        System.out.println("END");
+        System.out.println("\nEND");
     }
 }

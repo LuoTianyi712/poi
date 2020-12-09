@@ -1,12 +1,13 @@
+package cn.neusoft.poi.tools;
+
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFTable;
 import org.apache.poi.xwpf.usermodel.XWPFTableCell;
 import org.apache.poi.xwpf.usermodel.XWPFTableRow;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTblWidth;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STTblWidth;
-import util.DBHelper;
+import cn.neusoft.poi.util.DBHelper;
 
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
@@ -22,6 +23,9 @@ public class MySQLToWord {
     private XWPFTableRow wordRow;
     private int countColumnNum;
 
+    /***
+     * 创建word表格
+     */
     public void createWordForm()
     {
         db.connectToMySql();
@@ -38,7 +42,7 @@ public class MySQLToWord {
             for (int i = 0; i<countColumnNum; i++)
             {
                 names[i] = resultSet.getMetaData().getColumnName(i+1);
-                System.out.println(resultSet.getMetaData().getColumnName(i+1));
+//                System.out.println(resultSet.getMetaData().getColumnName(i+1));
             }
             //列宽自动分割
             CTTblWidth comTableWidth = comTable.getCTTbl().addNewTblPr().addNewTblW();
@@ -59,6 +63,9 @@ public class MySQLToWord {
         }
     }
 
+    /***
+     * 添加数据至表格中
+     */
     public void addAllDateToWordForm()
     {
         try {
@@ -76,13 +83,22 @@ public class MySQLToWord {
         }
     }
 
+    /***
+     * 将变更写入文件，导出docx文件
+     * @param filePath
+     */
     public void writeFormToDocx(String filePath)
     {
         try {
             FileOutputStream studentWord;
             studentWord = new FileOutputStream(filePath);
             document.write(studentWord);
-        } catch (IOException e) {
+
+            if (resultSet != null){
+                resultSet.close();
+            }
+            System.out.println("\ndocx文件输出成功");
+        } catch (IOException | SQLException e) {
             e.printStackTrace();
         }
     }

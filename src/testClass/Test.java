@@ -1,7 +1,7 @@
-package TestClass;
+package testClass;
 
-import bean.StudentBean;
-import util.DBHelper;
+import cn.neusoft.poi.bean.StudentBean;
+import cn.neusoft.poi.util.DBHelper;
 
 public class Test {
 //    public static void main(String [] args){

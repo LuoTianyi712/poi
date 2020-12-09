@@ -1,4 +1,4 @@
-package TestClass;
+package testClass;
 
 import org.apache.poi.xwpf.usermodel.*;
 
